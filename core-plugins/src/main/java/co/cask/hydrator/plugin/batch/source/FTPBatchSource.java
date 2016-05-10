@@ -31,12 +31,15 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 /**
- * {@link BatchSource} that reads from a FTP server
+ * {@link BatchSource} that reads from a FTP or SFTP server
  */
 @Plugin(type = "batchsource")
 @Name("FTP")
-@Description("Batch source for FTP source")
+@Description("Batch source for FTP or SFTP source. Prefix of the path ('ftp://...' or 'sftp://...') determines the " +
+  "source server type i.e. FTP or SFTP.")
 public class FTPBatchSource extends FileBatchSource {
+  private static final String PATH_DESCRIPTION = "Path to file(s) to be read. Path is expected to be of the form: " +
+    "prefix://username:password@hostname:port/path";
   private static final Gson GSON = new Gson();
   private static final Type MAP_STRING_STRING_TYPE = new TypeToken<Map<String, String>>() { }.getType();
 
@@ -44,7 +47,7 @@ public class FTPBatchSource extends FileBatchSource {
   private final FTPBatchSourceConfig config;
 
   public FTPBatchSource(FTPBatchSourceConfig config) {
-    super(new FileBatchConfig(config.referenceName, config.path, config.fileRegex, null, config.inputFormatClassName,
+    super(new FileBatchConfig(config.referenceName, config.path, config.fileRegex, null, config.inputFormatClass,
                               limitSplits(config.fileSystemProperties), null));
     this.config = config;
   }
@@ -65,7 +68,7 @@ public class FTPBatchSource extends FileBatchSource {
    * Config class that contains all the properties needed for FTP Batch Source.
    */
   public static class FTPBatchSourceConfig extends ReferencePluginConfig {
-    @Description(FileBatchSource.PATH_DESCRIPTION)
+    @Description(PATH_DESCRIPTION)
     public String path;
 
     @Description(FileBatchSource.FILESYSTEM_PROPERTIES_DESCRIPTION)
@@ -78,15 +81,15 @@ public class FTPBatchSource extends FileBatchSource {
 
     @Description(FileBatchSource.INPUT_FORMAT_CLASS_DESCRIPTION)
     @Nullable
-    public String inputFormatClassName;
+    public String inputFormatClass;
 
     public FTPBatchSourceConfig(String referenceName, String path, @Nullable String fileSystemProperties,
-                                @Nullable String fileRegex, @Nullable String inputFormatClassName) {
+                                @Nullable String fileRegex, @Nullable String inputFormatClass) {
       super(referenceName);
       this.path = path;
       this.fileSystemProperties = fileSystemProperties;
       this.fileRegex = fileRegex;
-      this.inputFormatClassName = inputFormatClassName;
+      this.inputFormatClass = inputFormatClass;
     }
   }
 }
